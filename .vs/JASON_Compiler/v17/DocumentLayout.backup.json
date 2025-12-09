@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\moham\\Downloads\\Parser-Template - Studs Versions\\Parser-Template - Studs Versions\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{317C883A-1AD2-4BF5-8033-D7C695787623}|JASON_Compiler\\JASON_Compiler.csproj|c:\\users\\moham\\downloads\\parser-template - studs versions\\parser-template - studs versions\\jason_compiler\\jason_compiler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{317C883A-1AD2-4BF5-8033-D7C695787623}|JASON_Compiler\\JASON_Compiler.csproj|solutionrelative:jason_compiler\\jason_compiler.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{317C883A-1AD2-4BF5-8033-D7C695787623}|JASON_Compiler\\JASON_Compiler.csproj|c:\\users\\moham\\downloads\\parser-template - studs versions\\parser-template - studs versions\\jason_compiler\\parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{317C883A-1AD2-4BF5-8033-D7C695787623}|JASON_Compiler\\JASON_Compiler.csproj|solutionrelative:jason_compiler\\parser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{317C883A-1AD2-4BF5-8033-D7C695787623}|JASON_Compiler\\JASON_Compiler.csproj|c:\\users\\moham\\downloads\\parser-template - studs versions\\parser-template - studs versions\\jason_compiler\\scanner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{317C883A-1AD2-4BF5-8033-D7C695787623}|JASON_Compiler\\JASON_Compiler.csproj|solutionrelative:jason_compiler\\scanner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "JASON_Compiler.cs",
+              "DocumentMoniker": "C:\\Users\\moham\\Downloads\\Parser-Template - Studs Versions\\Parser-Template - Studs Versions\\JASON_Compiler\\JASON_Compiler.cs",
+              "RelativeDocumentMoniker": "JASON_Compiler\\JASON_Compiler.cs",
+              "ToolTip": "C:\\Users\\moham\\Downloads\\Parser-Template - Studs Versions\\Parser-Template - Studs Versions\\JASON_Compiler\\JASON_Compiler.cs",
+              "RelativeToolTip": "JASON_Compiler\\JASON_Compiler.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-08T15:24:14.864Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Scanner.cs",
+              "DocumentMoniker": "C:\\Users\\moham\\Downloads\\Parser-Template - Studs Versions\\Parser-Template - Studs Versions\\JASON_Compiler\\Scanner.cs",
+              "RelativeDocumentMoniker": "JASON_Compiler\\Scanner.cs",
+              "ToolTip": "C:\\Users\\moham\\Downloads\\Parser-Template - Studs Versions\\Parser-Template - Studs Versions\\JASON_Compiler\\Scanner.cs",
+              "RelativeToolTip": "JASON_Compiler\\Scanner.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALQAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-08T15:22:18.252Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Parser.cs",
+              "DocumentMoniker": "C:\\Users\\moham\\Downloads\\Parser-Template - Studs Versions\\Parser-Template - Studs Versions\\JASON_Compiler\\Parser.cs",
+              "RelativeDocumentMoniker": "JASON_Compiler\\Parser.cs",
+              "ToolTip": "C:\\Users\\moham\\Downloads\\Parser-Template - Studs Versions\\Parser-Template - Studs Versions\\JASON_Compiler\\Parser.cs",
+              "RelativeToolTip": "JASON_Compiler\\Parser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-08T15:22:07.921Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
