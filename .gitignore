@@ -1,0 +1,23 @@
+# Ignore Visual Studio temporary files
+.vs/
+
+# Build results
+TINY_Compiler/bin/
+TINY_Compiler/obj/
+TINY_Compiler/.vs/
+
+# User-specific files
+*.user
+*.suo
+
+# Visual Studio cache
+*.cache
+*.db
+
+# Build logs
+*.pdb
+*.log
+
+# Backup files
+*.tmp
+*.bak
