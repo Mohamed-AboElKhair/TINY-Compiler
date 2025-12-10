@@ -34,34 +34,124 @@ namespace TINY_Compiler
         Node Program()
         {
             Node program = new Node("Program");
-            program.Children.Add(Header());
-            program.Children.Add(DeclSec());
-            program.Children.Add(Block());
-           // program.Children.Add(match(Token_Class.Dot));
             MessageBox.Show("Success");
             return program;
         }
-        
-        Node Header()
+
+        Node FunctionCall()
         {
-            Node header = new Node("Header");
-            // write your code here to check the header sructure
-            return header;
-        }
-        Node DeclSec()
-        {
-            Node declsec = new Node("DeclSec");
-            // write your code here to check atleast the declare sturcure 
-            // without adding procedures
-            return declsec;
-        }
-        Node Block()
-        {
-            Node block = new Node("block");
-            // write your code here to match statements
-            return block;
+            Node functionCall = new Node("FunctionCall");
+            functionCall.Children.Add(match(Token_Class.Identifier));
+            functionCall.Children.Add(match(Token_Class.OpenParenthesis));
+            functionCall.Children.Add(ArgumentList());
+            functionCall.Children.Add(match(Token_Class.CloseParenthesis));
+            return functionCall;
         }
 
+        Node ArgumentList()
+        {
+            Node argumentList = new Node("ArgumentList");
+            if (TokenStream[InputPointer].token_type != Token_Class.Identifier)
+            {
+                return argumentList; // empty argument list
+            }
+            argumentList.Children.Add(match(Token_Class.Identifier));
+            argumentList.Children.Add(Arguments());
+            return argumentList;
+        }
+
+        Node Arguments()
+        {
+            Node arguments = new Node("Arguments");
+            if (TokenStream[InputPointer].token_type != Token_Class.Comma)
+            {
+                return arguments; // no more arguments
+            }
+            arguments.Children.Add(match(Token_Class.Comma));
+            arguments.Children.Add(ArgumentList());
+
+            return arguments;
+        }
+
+        Node Term()
+        {
+            Node term = new Node("Term");
+            //Number or Identifier or function call
+            if (TokenStream[InputPointer].token_type == Token_Class.Number)
+            {
+                term.Children.Add(match(Token_Class.Number));
+            }
+            else if (TokenStream[InputPointer].token_type == Token_Class.Identifier)
+            { 
+                if (InputPointer + 1 < TokenStream.Count &&
+                    TokenStream[InputPointer + 1].token_type == Token_Class.OpenParenthesis)
+                {
+                    term.Children.Add(FunctionCall());
+                }
+                else
+                {
+                    term.Children.Add(match(Token_Class.Identifier));
+                }
+            }
+            else
+            { 
+                Errors.Error_List.Add("Parsing Error: Expected Number or Identifier at position " + InputPointer + "\r\n");
+                InputPointer++;
+            }
+            
+            return term;
+        }
+
+        Node Equation()
+        {
+            Node equation = new Node("Equation");
+            equation.Children.Add(EquationStart());
+            equation.Children.Add(EquationTail());
+            return equation;
+        }
+        Node EquationStart()
+        {
+            Node equationStart = new Node("EquationStart");
+            if (TokenStream[InputPointer].token_type == Token_Class.OpenParenthesis)
+            {
+                equationStart.Children.Add(match(Token_Class.OpenParenthesis));
+                equationStart.Children.Add(Equation());
+                equationStart.Children.Add(match(Token_Class.CloseParenthesis));
+            }
+            else
+            {
+                equationStart.Children.Add(Term());
+            }
+             return equationStart;
+        }
+        Node EquationTail()
+        {
+            Node equationtail = new Node("EquationTail");
+            //equationtail.Children.Add(ArthimeticOperator());
+            if(equationtail.Children.Count==0)
+            {
+                //no operator found return empty
+                return equationtail;
+            }
+            equationtail.Children.Add(Equation());
+            return equationtail;
+        }
+
+        Node Expression( )
+        {
+            Node expression = new Node("Expression");
+            if (TokenStream[InputPointer].token_type == Token_Class.String)
+            {
+                expression.Children.Add(match(Token_Class.String));
+                return expression;
+            }
+            //equation or term
+            //eqiation can have a single term might need to revise later 
+            expression.Children.Add(Equation());
+
+
+            return expression;
+        }
         // Implement your logic here
 
         public Node match(Token_Class ExpectedToken)
