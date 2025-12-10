@@ -34,10 +34,37 @@ namespace TINY_Compiler
         Node Program()
         {
             Node program = new Node("Program");
+            program.Children.Add(ProgramFunctions());
+            program.Children.Add(MainFunction());
             MessageBox.Show("Success");
             return program;
         }
-
+        Node ProgramFunctions()
+        {
+            Node programFunctions = new Node("ProgramFunctions");
+            while (InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type != Token_Class.Main)
+            {
+                programFunctions.Children.Add(FunctionStatement());
+            }
+            return programFunctions;
+        }
+        Node FunctionStatement()
+        {
+            Node functionstatement = new Node("FunctionStatement");
+            //functionstatement.Children.Add(FunctionDeclaration());
+            //functionstatement.Children.Add(FunctionBody());
+            return functionstatement;
+        }
+        Node MainFunction()
+        {
+            Node mainFunction = new Node("MainFunction");
+            mainFunction.Children.Add(match(Token_Class.Int));
+            mainFunction.Children.Add(match(Token_Class.Main));
+            mainFunction.Children.Add(match(Token_Class.OpenParenthesis));
+            mainFunction.Children.Add(match(Token_Class.CloseParenthesis));
+            //functionstatement.Children.Add(FunctionBody());
+            return mainFunction;
+        }
         Node FunctionCall()
         {
             Node functionCall = new Node("FunctionCall");
