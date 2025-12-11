@@ -179,6 +179,108 @@ namespace TINY_Compiler
 
             return expression;
         }
+
+
+        Node AssignmentStmt()
+        {
+            Node assignment = new Node("AssignmentStmt");
+            assignment.Children.Add(match(Token_Class.Identifier));
+            assignment.Children.Add(match(Token_Class.AssignOp));
+            assignment.Children.Add(Expression());
+            assignment.Children.Add(match(Token_Class.SemiColon));
+            return assignment;
+        }
+
+        Node DataType()
+        {
+            Node data_type = new Node("DataType");
+
+            Token_Class type = TokenStream[InputPointer].token_type;
+            if (type == Token_Class.Int || type == Token_Class.Float || type == Token_Class.String)
+            {
+                data_type.Children.Add(match(type));
+            }
+            else
+            {
+                Errors.Error_List.Add("Parsing Error: Expected DataType at position " + InputPointer + "\r\n");
+            }
+
+            return data_type;
+        }
+
+        Node DeclarationStmt()
+        {
+            Node decl = new Node("DeclarationStmt");
+            decl.Children.Add(DataType());
+            decl.Children.Add(DeclList());
+            decl.Children.Add(match(Token_Class.SemiColon));
+            return decl;
+        }
+
+        Node DeclList()
+        {
+            Node list = new Node("DeclList");
+            list.Children.Add(DeclItem());
+            list.Children.Add(DeclListDach());
+            return list;
+        }
+
+        Node DeclListDach()
+        {
+            Node listPrime = new Node("DeclListDach");
+
+            if (TokenStream[InputPointer].token_type == Token_Class.Comma)
+            {
+                listPrime.Children.Add(match(Token_Class.Comma));
+                listPrime.Children.Add(DeclItem());
+                listPrime.Children.Add(DeclListDach());
+            }
+
+            // else ε
+            return listPrime;
+        }
+
+        Node DeclItem()
+        {
+            Node item = new Node("DeclItem");
+            item.Children.Add(match(Token_Class.Identifier));
+            item.Children.Add(OptInit());
+            return item;
+        }
+
+        Node OptInit()
+        {
+            Node init = new Node("OptInit");
+
+            if (TokenStream[InputPointer].token_type == Token_Class.AssignOp)
+            {
+                init.Children.Add(match(Token_Class.AssignOp));
+                init.Children.Add(Expression());
+            }
+
+            // else ε 
+            return init;
+        }
+
+        Node WriteStmt()
+        {
+            Node Write_Stmt = new Node("WriteStmt");
+
+            Write_Stmt.Children.Add(match(Token_Class.Write));
+
+            if (TokenStream[InputPointer].token_type == Token_Class.Endl)
+            {
+                Write_Stmt.Children.Add(match(Token_Class.Endl));
+            }
+            else
+            {
+                Write_Stmt.Children.Add(Expression());
+            }
+
+            Write_Stmt.Children.Add(match(Token_Class.SemiColon));
+            return Write_Stmt;
+
+        }
         // Implement your logic here
 
         public Node match(Token_Class ExpectedToken)
