@@ -41,7 +41,8 @@ namespace TINY_Compiler
         }
         Node ProgramFunctions()
         {
-            Node programFunctions = new Node("ProgramFunctions");
+            Node programFunctions = null;//new Node("ProgramFunctions");
+            if(InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type != Token_Class.Main) programFunctions = new Node("ProgramFunctions");
             while (InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type != Token_Class.Main)
             {
                 programFunctions.Children.Add(FunctionStatement());
@@ -51,8 +52,8 @@ namespace TINY_Compiler
         Node FunctionStatement()
         {
             Node functionstatement = new Node("FunctionStatement");
-            //functionstatement.Children.Add(FunctionDeclaration());
-            //functionstatement.Children.Add(FunctionBody());
+            functionstatement.Children.Add(Function_Declaration());
+            functionstatement.Children.Add(Function_body());
             return functionstatement;
         }
         Node MainFunction()
@@ -62,7 +63,7 @@ namespace TINY_Compiler
             mainFunction.Children.Add(match(Token_Class.Main));
             mainFunction.Children.Add(match(Token_Class.OpenParenthesis));
             mainFunction.Children.Add(match(Token_Class.CloseParenthesis));
-            //functionstatement.Children.Add(FunctionBody());
+            mainFunction.Children.Add(Function_body());
             return mainFunction;
         }
         Node FunctionCall()
@@ -78,6 +79,7 @@ namespace TINY_Compiler
         Node ArgumentList()
         {
             Node argumentList = new Node("ArgumentList");
+            if (InputPointer >= TokenStream.Count) return argumentList;
             if (TokenStream[InputPointer].token_type != Token_Class.Identifier)
             {
                 return argumentList; // empty argument list
@@ -90,6 +92,7 @@ namespace TINY_Compiler
         Node Arguments()
         {
             Node arguments = new Node("Arguments");
+            if (InputPointer >= TokenStream.Count) return arguments;
             if (TokenStream[InputPointer].token_type != Token_Class.Comma)
             {
                 return arguments; // no more arguments
@@ -104,6 +107,7 @@ namespace TINY_Compiler
         {
             Node term = new Node("Term");
             //Number or Identifier or function call
+            if (InputPointer >= TokenStream.Count) return term;
             if (TokenStream[InputPointer].token_type == Token_Class.Number)
             {
                 term.Children.Add(match(Token_Class.Number));
@@ -123,7 +127,7 @@ namespace TINY_Compiler
             else
             { 
                 Errors.Error_List.Add("Parsing Error: Expected Number or Identifier at position " + InputPointer + "\r\n");
-                InputPointer++;
+                //InputPointer++;
             }
             
             return term;
@@ -139,7 +143,7 @@ namespace TINY_Compiler
         Node EquationStart()
         {
             Node equationStart = new Node("EquationStart");
-            if (TokenStream[InputPointer].token_type == Token_Class.OpenParenthesis)
+            if (InputPointer < TokenStream.Count && TokenStream[InputPointer].token_type == Token_Class.OpenParenthesis)
             {
                 equationStart.Children.Add(match(Token_Class.OpenParenthesis));
                 equationStart.Children.Add(Equation());
@@ -167,7 +171,8 @@ namespace TINY_Compiler
         Node Expression( )
         {
             Node expression = new Node("Expression");
-            if (TokenStream[InputPointer].token_type == Token_Class.String)
+
+            if (InputPointer < TokenStream.Count && TokenStream[InputPointer].token_type == Token_Class.String)
             {
                 expression.Children.Add(match(Token_Class.String));
                 return expression;
@@ -194,7 +199,11 @@ namespace TINY_Compiler
         Node DataType()
         {
             Node data_type = new Node("DataType");
-
+            if (InputPointer >= TokenStream.Count)
+            {
+                Errors.Error_List.Add("Parsing Error: Expected DataType at position " + InputPointer + "\r\n");
+                return data_type;
+            }
             Token_Class type = TokenStream[InputPointer].token_type;
             if (type == Token_Class.Int || type == Token_Class.Float || type == Token_Class.String)
             {
@@ -228,7 +237,7 @@ namespace TINY_Compiler
         Node DeclListDach()
         {
             Node listPrime = new Node("DeclListDach");
-
+            if (InputPointer >= TokenStream.Count) return listPrime;
             if (TokenStream[InputPointer].token_type == Token_Class.Comma)
             {
                 listPrime.Children.Add(match(Token_Class.Comma));
@@ -251,7 +260,7 @@ namespace TINY_Compiler
         Node OptInit()
         {
             Node init = new Node("OptInit");
-
+            if (InputPointer >= TokenStream.Count) return init;
             if (TokenStream[InputPointer].token_type == Token_Class.AssignOp)
             {
                 init.Children.Add(match(Token_Class.AssignOp));
@@ -268,7 +277,7 @@ namespace TINY_Compiler
 
             Write_Stmt.Children.Add(match(Token_Class.Write));
 
-            if (TokenStream[InputPointer].token_type == Token_Class.Endl)
+            if (InputPointer < TokenStream.Count && TokenStream[InputPointer].token_type == Token_Class.Endl)
             {
                 Write_Stmt.Children.Add(match(Token_Class.Endl));
             }
@@ -304,6 +313,7 @@ namespace TINY_Compiler
         Node condition_operator()
         {
             Node conoperator = new Node("condition_operator");
+            if (InputPointer >= TokenStream.Count) return conoperator;
             switch (TokenStream[InputPointer].token_type)
             {
                 case Token_Class.EqualOp:
@@ -555,7 +565,7 @@ namespace TINY_Compiler
         Node Parameters()
         {
             Node Params = new Node("Parameters");
-
+            if (InputPointer >= TokenStream.Count) return Params;
             if (TokenStream[InputPointer].token_type == Token_Class.CloseParenthesis)
                 return Params; // empty parameters
 
