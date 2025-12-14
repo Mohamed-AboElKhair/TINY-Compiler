@@ -80,11 +80,11 @@ namespace TINY_Compiler
         {
             Node argumentList = new Node("ArgumentList");
             if (InputPointer >= TokenStream.Count) return argumentList;
-            if (TokenStream[InputPointer].token_type != Token_Class.Identifier)
+            if (TokenStream[InputPointer].token_type == Token_Class.CloseParenthesis)
             {
                 return argumentList; // empty argument list
             }
-            argumentList.Children.Add(match(Token_Class.Identifier));
+            argumentList.Children.Add(Expression());
             argumentList.Children.Add(Arguments());
             return argumentList;
         }
@@ -98,7 +98,8 @@ namespace TINY_Compiler
                 return arguments; // no more arguments
             }
             arguments.Children.Add(match(Token_Class.Comma));
-            arguments.Children.Add(ArgumentList());
+            arguments.Children.Add(Expression());
+            arguments.Children.Add(Arguments());
 
             return arguments;
         }
@@ -113,7 +114,7 @@ namespace TINY_Compiler
                 term.Children.Add(match(Token_Class.Number));
             }
             else if (TokenStream[InputPointer].token_type == Token_Class.Identifier)
-            { 
+            {
                 if (InputPointer + 1 < TokenStream.Count &&
                     TokenStream[InputPointer + 1].token_type == Token_Class.OpenParenthesis)
                 {
@@ -125,63 +126,122 @@ namespace TINY_Compiler
                 }
             }
             else
-            { 
+            {
                 Errors.Error_List.Add("Parsing Error: Expected Number or Identifier at position " + InputPointer + "\r\n");
-                //InputPointer++;
             }
-            
             return term;
         }
+        Node ArithOp()
+        {
+            Node arthop = new Node("ArithOp");
 
-        Node Equation()
-        {
-            Node equation = new Node("Equation");
-            equation.Children.Add(EquationStart());
-            equation.Children.Add(EquationTail());
-            return equation;
-        }
-        Node EquationStart()
-        {
-            Node equationStart = new Node("EquationStart");
-            if (InputPointer < TokenStream.Count && TokenStream[InputPointer].token_type == Token_Class.OpenParenthesis)
+            if (InputPointer >= TokenStream.Count)
             {
-                equationStart.Children.Add(match(Token_Class.OpenParenthesis));
-                equationStart.Children.Add(Equation());
-                equationStart.Children.Add(match(Token_Class.CloseParenthesis));
+                Errors.Error_List.Add("Parsing Error: Expected arithmetic operator but reached end of input.");
+                return arthop;
+            }
+
+            Token_Class current = TokenStream[InputPointer].token_type;
+
+            if (current == Token_Class.PlusOp)
+            {
+                arthop.Children.Add(match(Token_Class.PlusOp));
+            }
+            else if (current == Token_Class.MinusOp)
+            {
+                arthop.Children.Add(match(Token_Class.MinusOp));
+            }
+            else if (current == Token_Class.MultiplyOp)
+            {
+                arthop.Children.Add(match(Token_Class.MultiplyOp));
+            }
+            else if (current == Token_Class.DivideOp)
+            {
+                arthop.Children.Add(match(Token_Class.DivideOp));
             }
             else
             {
-                equationStart.Children.Add(Term());
+                Errors.Error_List.Add("Parsing Error: Expected arithmetic operator at position " + InputPointer +
+                                      " but found " + current);
+                InputPointer++; // advance to avoid infinite loop
             }
-             return equationStart;
-        }
-        Node EquationTail()
-        {
-            Node equationtail = new Node("EquationTail");
-            //equationtail.Children.Add(ArthimeticOperator());
-            if(equationtail.Children.Count==0)
-            {
-                //no operator found return empty
-                return equationtail;
-            }
-            equationtail.Children.Add(Equation());
-            return equationtail;
-        }
 
+            return arthop;
+        }
+        bool IsArithOp(Token_Class token)
+        {
+            if (token == Token_Class.PlusOp)
+                return true;
+            else if (token == Token_Class.MinusOp)
+                return true;
+            else if (token == Token_Class.MultiplyOp)
+                return true;
+            else if (token == Token_Class.DivideOp)
+                return true;
+            else
+                return false;
+        }
+        Node Equation()
+        {
+            Node equation = new Node("Equation");
+            if (InputPointer >= TokenStream.Count) return equation;
+            equation.Children.Add(Factor());
+            if (IsArithOp(TokenStream[InputPointer].token_type))
+            {
+                equation.Children.Add(ArithOp());
+            }
+            equation.Children.Add(Factor());
+            equation.Children.Add(EquationDash());
+            return equation;
+        }
+        Node EquationDash()
+        {
+            Node equationDash = new Node("EquationDash");
+            if (InputPointer >= TokenStream.Count) return equationDash;
+            if( IsArithOp(TokenStream[InputPointer].token_type))
+            {
+                equationDash.Children.Add(ArithOp());
+                equationDash.Children.Add(Factor());
+                equationDash.Children.Add(EquationDash());
+            }
+            return equationDash;
+
+        }
+        Node Factor()
+        {
+            Node factor = new Node("Factor");
+            //Term or Equation
+            if (InputPointer >= TokenStream.Count) return factor;
+            if (TokenStream[InputPointer].token_type == Token_Class.OpenParenthesis)
+            {
+                factor.Children.Add(match(Token_Class.OpenParenthesis));
+                factor.Children.Add(Equation());
+                factor.Children.Add(match(Token_Class.CloseParenthesis));
+            }
+            else
+            {
+                factor.Children.Add(Term());
+            }
+            return factor;
+        }
         Node Expression( )
         {
             Node expression = new Node("Expression");
+            if (InputPointer >= TokenStream.Count) return expression;
 
             if (InputPointer < TokenStream.Count && TokenStream[InputPointer].token_type == Token_Class.String)
             {
                 expression.Children.Add(match(Token_Class.String));
                 return expression;
             }
-            //equation or term
-            //eqiation can have a single term might need to revise later 
+            //will be a term only if it has no arithmetic operation
+            if(InputPointer +1 < TokenStream.Count && !IsArithOp(TokenStream[InputPointer + 1].token_type))
+            {
+                expression.Children.Add(Term());
+                return expression;
+            }
+
             expression.Children.Add(Equation());
-
-
             return expression;
         }
 
@@ -395,7 +455,7 @@ namespace TINY_Compiler
                 ifstat.Children.Add(Else_Statement());
             }
 
-           // ifstat.Children.Add(match(Token_Class.End));
+            ifstat.Children.Add(match(Token_Class.End));
 
             return ifstat;
 
@@ -413,7 +473,6 @@ namespace TINY_Compiler
             {
                 elseifstat.Children.Add(Else_Statement());
             }
-            //elseifstat.Children.Add(match(Token_Class.End));
 
             return elseifstat;
 
@@ -475,11 +534,11 @@ namespace TINY_Compiler
                     return statementNode;
 
                 }
-                else if (token == Token_Class.Return)
-                {
-                    statementNode.Children.Add(ReturnStat());
-                    return statementNode;
-                }
+                //else if (token == Token_Class.Return)
+                //{
+                //    statementNode.Children.Add(ReturnStat());
+                //    return statementNode;
+                //}
                 else if (token == Token_Class.Repeat)
                 {
                     statementNode.Children.Add(Repeat_Statement());
@@ -498,11 +557,12 @@ namespace TINY_Compiler
                 }
                 else if (token == Token_Class.Identifier)
                 {
+                    Console.WriteLine("Identifier found at position " + InputPointer);
                     if (InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type == Token_Class.AssignOp)
                         statementNode.Children.Add(AssignmentStmt());
-                    else
+                    else if(InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type == Token_Class.OpenParenthesis)
                         statementNode.Children.Add(FunctionCall());
-                    statementNode.Children.Add(match(Token_Class.SemiColon));
+  
                     return statementNode;
                 }
                 else
@@ -549,7 +609,7 @@ namespace TINY_Compiler
         {
             Node funcbody = new Node("Function_body");
             funcbody.Children.Add(match(Token_Class.OpenBrace));
-            funcbody.Children.Add(Statement());
+            funcbody.Children.Add(Statements());
             funcbody.Children.Add(ReturnStat());
             funcbody.Children.Add(match(Token_Class.CloseBrace));
             return funcbody;
