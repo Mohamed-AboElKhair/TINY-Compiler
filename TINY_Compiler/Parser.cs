@@ -290,46 +290,60 @@ namespace TINY_Compiler
         {
             Node list = new Node("DeclList");
             list.Children.Add(DeclItem());
-            list.Children.Add(DeclListDach());
+
+            Node dash = DeclListDach();
+            if (dash != null)
+                list.Children.Add(dash);
+
             return list;
         }
 
         Node DeclListDach()
         {
-            Node listPrime = new Node("DeclListDach");
-            if (InputPointer >= TokenStream.Count) return listPrime;
-            if (TokenStream[InputPointer].token_type == Token_Class.Comma)
+            if (InputPointer < TokenStream.Count &&
+                TokenStream[InputPointer].token_type == Token_Class.Comma)
             {
+                Node listPrime = new Node("DeclListDach");
                 listPrime.Children.Add(match(Token_Class.Comma));
                 listPrime.Children.Add(DeclItem());
-                listPrime.Children.Add(DeclListDach());
+
+                Node dash = DeclListDach();
+                if (dash != null)
+                    listPrime.Children.Add(dash);
+
+                return listPrime;
             }
 
-            // else ε
-            return listPrime;
+            return null;
         }
+
 
         Node DeclItem()
         {
             Node item = new Node("DeclItem");
             item.Children.Add(match(Token_Class.Identifier));
-            item.Children.Add(OptInit());
+
+            Node init = OptInit();
+            if (init != null)
+                item.Children.Add(init);
+
             return item;
         }
 
         Node OptInit()
         {
-            Node init = new Node("OptInit");
-            if (InputPointer >= TokenStream.Count) return init;
-            if (TokenStream[InputPointer].token_type == Token_Class.AssignOp)
+            if (InputPointer < TokenStream.Count &&
+                TokenStream[InputPointer].token_type == Token_Class.AssignOp)
             {
+                Node init = new Node("OptInit");
                 init.Children.Add(match(Token_Class.AssignOp));
                 init.Children.Add(Expression());
+                return init;
             }
 
-            // else ε 
-            return init;
+            return null;
         }
+
 
         Node WriteStmt()
         {
