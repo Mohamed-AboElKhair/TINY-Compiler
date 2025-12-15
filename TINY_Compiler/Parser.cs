@@ -85,7 +85,9 @@ namespace TINY_Compiler
                 return argumentList; // empty argument list
             }
             argumentList.Children.Add(Expression());
-            argumentList.Children.Add(Arguments());
+            Node ret = Arguments();
+            if(ret.Children.Count > 0)
+                argumentList.Children.Add(ret);
             return argumentList;
         }
 
@@ -99,8 +101,9 @@ namespace TINY_Compiler
             }
             arguments.Children.Add(match(Token_Class.Comma));
             arguments.Children.Add(Expression());
-            arguments.Children.Add(Arguments());
-
+            Node ret = Arguments();
+            if (ret.Children.Count > 0)
+                arguments.Children.Add(ret);
             return arguments;
         }
 
