@@ -574,10 +574,12 @@ namespace TINY_Compiler
                     Console.WriteLine("Identifier found at position " + InputPointer);
                     if (InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type == Token_Class.AssignOp)
                         statementNode.Children.Add(AssignmentStmt());
-                    else if(InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type == Token_Class.OpenParenthesis)
+                    else if (InputPointer + 1 < TokenStream.Count && TokenStream[InputPointer + 1].token_type == Token_Class.OpenParenthesis)
+                    {
                         statementNode.Children.Add(FunctionCall());
-  
-                    return statementNode;
+                        statementNode.Children.Add(match(Token_Class.SemiColon));
+                    }
+                        return statementNode;
                 }
                 else
                     return null;
