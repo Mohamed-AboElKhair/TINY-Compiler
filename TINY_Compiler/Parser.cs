@@ -125,10 +125,6 @@ namespace TINY_Compiler
                     term.Children.Add(match(Token_Class.Identifier));
                 }
             }
-            else
-            {
-                Errors.Error_List.Add("Parsing Error: Expected Number or Identifier at position " + InputPointer + "\r\n");
-            }
             return term;
         }
         Node ArithOp()
@@ -158,12 +154,6 @@ namespace TINY_Compiler
             else if (current == Token_Class.DivideOp)
             {
                 arthop.Children.Add(match(Token_Class.DivideOp));
-            }
-            else
-            {
-                Errors.Error_List.Add("Parsing Error: Expected arithmetic operator at position " + InputPointer +
-                                      " but found " + current);
-                InputPointer++; // advance to avoid infinite loop
             }
 
             return arthop;
@@ -432,7 +422,15 @@ namespace TINY_Compiler
         {
             Node conditionS = new Node("Condition_Statement");
             conditionS.Children.Add(Condition());
-            conditionS.Children.Add(ConditionStatementTail());
+            if(conditionS.Children.Count == 0)
+            {
+                Errors.Error_List.Add("Parsing Error: Invalid Condition Statement at position " + InputPointer + "\r\n");
+                return null;
+            }
+            Node ret = ConditionStatementTail();
+            if(ret.Children.Count > 0) {
+                conditionS.Children.Add(ret);   
+            }
             return conditionS;
         }
 
@@ -684,7 +682,7 @@ namespace TINY_Compiler
                         + ExpectedToken.ToString() + " and " +
                         TokenStream[InputPointer].token_type.ToString() +
                         "  found\r\n");
-                    InputPointer++;
+                    //InputPointer++;
                     return null;
                 }
             }
@@ -692,7 +690,7 @@ namespace TINY_Compiler
             {
                 Errors.Error_List.Add("Parsing Error: Expected "
                         + ExpectedToken.ToString()  + "\r\n");
-                InputPointer++;
+                //InputPointer++;
                 return null;
             }
         }
